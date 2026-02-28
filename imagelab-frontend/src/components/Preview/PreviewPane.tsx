@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ZoomIn, ZoomOut, Image, ImageDown, Trash2 } from "lucide-react";
+import { ZoomIn, ZoomOut, Image, ImageDown, Trash2, Timer } from "lucide-react";
 import { usePipelineStore } from "../../store/pipelineStore";
 import ImageDisplay from "./ImageDisplay";
 
@@ -34,8 +34,13 @@ function ZoomControls({
   );
 }
 
+/** Strip common block prefixes (e.g. "geometric_rotateimage" → "rotateimage") */
+function formatStepType(type: string): string {
+  return type.replace(/^[a-z]+_/, "");
+}
+
 export default function PreviewPane() {
-  const { originalImage, imageFormat, processedImage, error, errorStep, clearImage } =
+  const { originalImage, imageFormat, processedImage, error, errorStep, timings, clearImage } =
     usePipelineStore();
   const [originalZoom, setOriginalZoom] = useState<number | null>(null);
   const [processedZoom, setProcessedZoom] = useState<number | null>(null);
@@ -44,6 +49,9 @@ export default function PreviewPane() {
     setter((prev) => Math.min((prev ?? 300) + 100, 2500));
   const zoomOut = (setter: React.Dispatch<React.SetStateAction<number | null>>) => () =>
     setter((prev) => Math.max((prev ?? 300) - 100, 100));
+
+  /** Width of the per-step duration bar relative to the slowest step */
+  const maxStepMs = timings ? Math.max(...timings.steps.map((s) => s.duration_ms), 1) : 1;
 
   return (
     <div className="w-80 h-full bg-white border-l border-gray-200 flex flex-col flex-shrink-0">
@@ -83,6 +91,12 @@ export default function PreviewPane() {
           <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
             Processed
           </h2>
+          {timings && (
+            <span className="ml-auto flex items-center gap-1 px-1.5 py-0.5 bg-emerald-50 text-emerald-700 rounded text-[10px] font-semibold">
+              <Timer size={10} />
+              {timings.total_ms.toFixed(1)} ms
+            </span>
+          )}
         </div>
         <div className="flex-1 flex items-center justify-center p-3 bg-gray-50 overflow-auto">
           {processedImage ? (
@@ -101,6 +115,43 @@ export default function PreviewPane() {
             <p className="text-xs text-red-600">{error}</p>
           </div>
         )}
+
+        {/* Per-step timing — collapsible */}
+        {timings && timings.steps.length > 0 && (
+          <details className="border-t border-gray-200">
+            <summary className="px-3 py-1.5 flex items-center gap-1.5 cursor-pointer select-none hover:bg-gray-50 transition-colors list-none">
+              <Timer size={12} className="text-gray-400" />
+              <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">
+                Step Timings
+              </span>
+              <span className="ml-auto text-[10px] text-gray-400">
+                {timings.steps.length} step{timings.steps.length !== 1 ? "s" : ""}
+              </span>
+            </summary>
+            <div className="px-3 py-2 space-y-1.5 max-h-40 overflow-y-auto">
+              {timings.steps.map((s) => (
+                <div key={s.step} className="flex items-center gap-2">
+                  <span className="text-[10px] text-gray-400 w-4 text-right shrink-0">
+                    {s.step}
+                  </span>
+                  <span className="text-[10px] text-gray-600 truncate flex-1" title={s.type}>
+                    {formatStepType(s.type)}
+                  </span>
+                  <div className="w-12 h-1.5 bg-gray-100 rounded-full overflow-hidden shrink-0">
+                    <div
+                      className="h-full bg-emerald-400 rounded-full"
+                      style={{ width: `${(s.duration_ms / maxStepMs) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-[10px] text-gray-500 w-12 text-right shrink-0">
+                    {s.duration_ms.toFixed(1)} ms
+                  </span>
+                </div>
+              ))}
+            </div>
+          </details>
+        )}
+
         <ZoomControls
           disabled={!processedImage}
           onZoomIn={zoomIn(setProcessedZoom)}

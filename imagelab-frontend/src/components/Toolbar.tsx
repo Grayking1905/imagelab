@@ -23,6 +23,7 @@ export default function Toolbar({ workspace }: ToolbarProps) {
     setProcessedImage,
     setExecuting,
     setError,
+    setTiming,
     reset,
     blockCount,
     uniqueBlockTypes,
@@ -60,6 +61,7 @@ export default function Toolbar({ workspace }: ToolbarProps) {
 
     setExecuting(true);
     setError(null);
+    setTiming(null);
 
     try {
       const response = await executePipeline({
@@ -70,6 +72,7 @@ export default function Toolbar({ workspace }: ToolbarProps) {
 
       if (response.success && response.image) {
         setProcessedImage(response.image);
+        setTiming(response.timings ?? null);
       } else {
         setError(response.error || "Pipeline execution failed", response.step);
       }

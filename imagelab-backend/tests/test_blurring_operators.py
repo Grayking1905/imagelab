@@ -16,7 +16,8 @@ def grayscale_image():
     return np.random.randint(0, 256, (100, 100), dtype=np.uint8)
 
 
-# Blur 
+# Blur
+
 
 class TestBlur:
     def test_default_params_output_shape(self, color_image):
@@ -44,7 +45,8 @@ class TestBlur:
         assert result.std() <= color_image.std()
 
 
-# GaussianBlur 
+# GaussianBlur
+
 
 class TestGaussianBlur:
     def test_default_params_output_shape(self, color_image):
@@ -72,7 +74,8 @@ class TestGaussianBlur:
         assert result.dtype == np.uint8
 
 
-# MedianBlur 
+# MedianBlur
+
 
 class TestMedianBlur:
     def test_default_params_output_shape(self, color_image):

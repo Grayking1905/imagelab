@@ -75,6 +75,15 @@ export const categories: CategoryInfo[] = [
     ],
   },
   {
+    name: "Segmentation",
+    icon: "Layers",
+    colour: "#4DD0E1",
+    blocks: [
+      { type: "segmentation_watershed", label: "Watershed" },
+      { type: "segmentation_kmeans", label: "K-Means" },
+    ],
+  },
+  {
     name: "Filtering",
     icon: "Filter",
     colour: "#F06292",

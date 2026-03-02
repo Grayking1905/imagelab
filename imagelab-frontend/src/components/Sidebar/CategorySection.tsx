@@ -12,6 +12,7 @@ import {
   SlidersHorizontal,
   Scan,
   Shuffle,
+  Layers,
 } from "lucide-react";
 import type { CategoryInfo } from "../../blocks/categories";
 import type { BlockPreview } from "../../hooks/useBlockPreviews";
@@ -27,6 +28,7 @@ const iconMap: Record<string, React.ComponentType<{ size?: number; color?: strin
   SlidersHorizontal,
   Scan,
   Shuffle,
+  Layers,
 };
 
 interface CategorySectionProps {

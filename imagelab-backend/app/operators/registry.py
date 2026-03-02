@@ -36,6 +36,8 @@ from app.operators.geometric.reflect_image import ReflectImage
 from app.operators.geometric.resize_image import ResizeImage
 from app.operators.geometric.rotate_image import RotateImage
 from app.operators.geometric.scale_image import ScaleImage
+from app.operators.segmentation.kmeans_segmentation import KMeansSegmentation
+from app.operators.segmentation.watershed import Watershed
 from app.operators.sobel_derivatives.scharr_derivative import ScharrDerivative
 from app.operators.sobel_derivatives.sobel_derivative import SobelDerivative
 from app.operators.thresholding.adaptive_threshold import AdaptiveThreshold
@@ -100,6 +102,9 @@ OPERATOR_REGISTRY: dict[str, type[BaseOperator]] = {
     # Transformation
     "transformation_distance": DistanceTransform,
     "transformation_laplacian": Laplacian,
+    # Segmentation
+    "segmentation_watershed": Watershed,
+    "segmentation_kmeans": KMeansSegmentation,
 }
 
 

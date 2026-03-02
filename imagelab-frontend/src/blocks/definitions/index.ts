@@ -9,6 +9,7 @@ import { filteringBlocks } from "./filtering.blocks";
 import { thresholdingBlocks } from "./thresholding.blocks";
 import { sobelDerivativesBlocks } from "./sobel-derivatives.blocks";
 import { transformationBlocks } from "./transformation.blocks";
+import { segmentationBlocks } from "./segmentation.blocks";
 
 export function registerAllBlocks() {
   registerReadImageExtension();
@@ -22,5 +23,6 @@ export function registerAllBlocks() {
     ...thresholdingBlocks,
     ...sobelDerivativesBlocks,
     ...transformationBlocks,
+    ...segmentationBlocks,
   ]);
 }

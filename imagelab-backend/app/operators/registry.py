@@ -27,6 +27,7 @@ from app.operators.filtering.box_filter import BoxFilter
 from app.operators.filtering.contour_detection import ContourDetection
 from app.operators.filtering.dilation import Dilation
 from app.operators.filtering.erosion import Erosion
+from app.operators.filtering.gabor_filter import GaborFilter
 from app.operators.filtering.morphological import Morphological
 from app.operators.filtering.pyramid_down import PyramidDown
 from app.operators.filtering.pyramid_up import PyramidUp
@@ -92,6 +93,7 @@ OPERATOR_REGISTRY: dict[str, type[BaseOperator]] = {
     "filtering_erosion": Erosion,
     "filtering_dilation": Dilation,
     "filtering_morphological": Morphological,
+    "filtering_gaborfilter": GaborFilter,
     "filtering_contourdetection": ContourDetection,
     # Thresholding
     "thresholding_applythreshold": ApplyThreshold,

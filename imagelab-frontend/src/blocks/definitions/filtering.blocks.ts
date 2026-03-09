@@ -113,6 +113,27 @@ export const filteringBlocks = [
     tooltip: "Applies image sharpening to enhance edges and details",
   },
   {
+    type: "filtering_gaborfilter",
+    message0: "Apply Gabor filter %1 kernel size %2 %3 sigma %4 %5 theta (deg) %6 %7 lambda %8 %9 gamma %10",
+    args0: [
+      { type: "input_dummy" },
+      { type: "field_number", name: "kernelSize", value: 21, min: 1, precision: 1 },
+      { type: "input_dummy" },
+      { type: "field_number", name: "sigma", value: 5.0, min: 0.1, precision: 0.1 },
+      { type: "input_dummy" },
+      { type: "field_number", name: "theta", value: 0, min: 0, max: 180, precision: 1 },
+      { type: "input_dummy" },
+      { type: "field_number", name: "lambda_", value: 10.0, min: 1.0, precision: 0.5 },
+      { type: "input_dummy" },
+      { type: "field_number", name: "gamma", value: 0.5, min: 0.1, max: 1.0, precision: 0.1 },
+    ],
+    previousStatement: null,
+    nextStatement: null,
+    style: "filtering_style",
+    tooltip:
+      "Apply Gabor filter for texture detection - A Gabor filter is a Gaussian kernel modulated by a sinusoidal wave, making it highly sensitive to edges and textures at a specific orientation and frequency. 'Kernel size' controls the filter window (odd numbers only). 'Sigma' sets the width of the Gaussian envelope. 'Theta' (0–180°) selects the orientation — 0° targets horizontal edges, 90° targets vertical. 'Lambda' controls the texture frequency scale (higher = coarser textures). 'Gamma' adjusts the filter's aspect ratio. Useful for wood grain, fabric, fingerprint, and surface texture analysis.",
+  },
+  {
     type: "filtering_contourdetection",
     message0: "Draw Contours with mode %1 %2 method %3 %4 color %5 %6 thickness %7",
     args0: [

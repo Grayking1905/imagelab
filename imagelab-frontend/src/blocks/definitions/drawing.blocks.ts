@@ -119,6 +119,6 @@ export const drawingBlocks = [
     nextStatement: null,
     style: "drawing_style",
     tooltip:
-      "Draws text on the image - Places customizable text at specified coordinates on the image. You can adjust the text content, thickness, scale, and color to suit your needs. This block is ideal for adding annotations, labels, or any textual information directly onto the design.",
+      "Draws text on the image - Places customizable text at specified coordinates on the image. You can adjust the text content, thickness, scale, and color to suit your needs. This block is ideal for adding annotations, labels, or any textual information directly onto the image.",
   },
 ];

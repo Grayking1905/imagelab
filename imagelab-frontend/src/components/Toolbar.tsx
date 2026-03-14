@@ -1,11 +1,12 @@
 import { useState } from "react";
 import * as Blockly from "blockly";
-import { FilePlus, Download, Undo2, Redo2, Play, Loader2, Share2 } from "lucide-react";
+import { FilePlus, Download, Undo2, Redo2, Play, Loader2, Share2, Layout } from "lucide-react";
 import { usePipelineStore } from "../store/pipelineStore";
 import { executePipeline } from "../api/pipeline";
 import { extractPipeline } from "../hooks/usePipeline";
 import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcuts";
 import SharePipelineModal from "./SharePipelineModal";
+import WorkspaceModal from "./WorkspaceModal";
 
 interface ToolbarProps {
   workspace: Blockly.WorkspaceSvg | null;
@@ -34,6 +35,7 @@ export default function Toolbar({ workspace }: ToolbarProps) {
   } = usePipelineStore();
 
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showWorkspaceModal, setShowWorkspaceModal] = useState(false);
 
   const handleNew = () => {
     if (!window.confirm("This will clear all blocks and the uploaded image. Continue?")) {
@@ -137,6 +139,16 @@ export default function Toolbar({ workspace }: ToolbarProps) {
           <Share2 size={18} />
         </button>
 
+        <button
+          onClick={() => setShowWorkspaceModal(true)}
+          disabled={!workspace}
+          className={`${iconBtn} flex items-center gap-1.5 px-3 hover:bg-indigo-50 hover:text-indigo-600`}
+          title="Workspaces"
+        >
+          <Layout size={18} />
+          <span className="text-sm font-medium">Workspace</span>
+        </button>
+
         <div className={separator} />
 
         <button
@@ -204,6 +216,9 @@ export default function Toolbar({ workspace }: ToolbarProps) {
 
       {showShareModal && (
         <SharePipelineModal workspace={workspace} onClose={() => setShowShareModal(false)} />
+      )}
+      {showWorkspaceModal && (
+        <WorkspaceModal workspace={workspace} onClose={() => setShowWorkspaceModal(false)} />
       )}
     </>
   );

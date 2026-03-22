@@ -31,7 +31,7 @@ export function extractPipeline(workspace: Blockly.WorkspaceSvg): PipelineStep[]
         });
       }
     });
-    pipeline.push({ type: block.type, params });
+    pipeline.push({ type: block.type, params, id: block.id });
     block = block.getNextBlock();
   }
   return pipeline;

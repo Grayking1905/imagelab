@@ -6,6 +6,11 @@ interface ShortcutHandlers {
   onDownload: () => void;
   onUndo: () => void;
   onRedo: () => void;
+  onDebugStepForward?: () => void;
+  onDebugStepBackward?: () => void;
+  onDebugExit?: () => void;
+  onDebugToggle?: () => void;
+  isDebugActive?: boolean;
   workspace: Blockly.WorkspaceSvg | null;
 }
 
@@ -25,11 +30,42 @@ export function useKeyboardShortcuts({
   onDownload,
   onUndo,
   onRedo,
+  onDebugStepForward,
+  onDebugStepBackward,
+  onDebugExit,
+  onDebugToggle,
+  isDebugActive,
   workspace,
 }: ShortcutHandlers) {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const meta = e.ctrlKey || e.metaKey;
+
+      if (!isTypingInBlockly()) {
+        if (e.key === "d" || e.key === "D") {
+          e.preventDefault();
+          onDebugToggle?.();
+          return;
+        }
+
+        if (isDebugActive) {
+          if (e.key === "ArrowRight") {
+            e.preventDefault();
+            onDebugStepForward?.();
+            return;
+          }
+          if (e.key === "ArrowLeft") {
+            e.preventDefault();
+            onDebugStepBackward?.();
+            return;
+          }
+          if (e.key === "Escape") {
+            e.preventDefault();
+            onDebugExit?.();
+            return;
+          }
+        }
+      }
 
       // Delete/Backspace: remove selected Blockly block (not when typing)
       if ((e.key === "Delete" || e.key === "Backspace") && !isTypingInBlockly()) {
@@ -78,5 +114,16 @@ export function useKeyboardShortcuts({
 
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [onRun, onDownload, onUndo, onRedo, workspace]);
+  }, [
+    onRun,
+    onDownload,
+    onUndo,
+    onRedo,
+    onDebugStepForward,
+    onDebugStepBackward,
+    onDebugExit,
+    onDebugToggle,
+    isDebugActive,
+    workspace,
+  ]);
 }

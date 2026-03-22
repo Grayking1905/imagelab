@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ZoomIn, ZoomOut, Image, ImageDown, Trash2, Timer } from "lucide-react";
 import { usePipelineStore } from "../../store/pipelineStore";
 import ImageDisplay from "./ImageDisplay";
+import DebugScrubber from "./DebugScrubber";
 
 function ZoomControls({
   disabled,
@@ -41,8 +42,16 @@ function getStepLabel(operatorType: string): string {
 }
 
 export default function PreviewPane() {
-  const { originalImage, imageFormat, processedImage, error, errorStep, clearImage, timings } =
-    usePipelineStore();
+  const {
+    originalImage,
+    imageFormat,
+    processedImage,
+    error,
+    errorStep,
+    clearImage,
+    timings,
+    isDebugActive,
+  } = usePipelineStore();
   const [originalZoom, setOriginalZoom] = useState<number | null>(null);
   const [processedZoom, setProcessedZoom] = useState<number | null>(null);
 
@@ -82,8 +91,14 @@ export default function PreviewPane() {
         />
       </div>
 
-      {/* Processed image — bottom half */}
-      <div className="flex-1 flex flex-col min-h-0">
+      {/* Processed image or Debug Scrubber — bottom half */}
+      <div className="flex-1 flex flex-col min-h-0 relative">
+        {isDebugActive ? (
+          <div className="absolute inset-0 z-10 flex flex-col bg-white">
+            <DebugScrubber />
+          </div>
+        ) : null}
+
         <div className="flex items-center justify-between px-3 py-1.5 border-b border-gray-200">
           <div className="flex items-center gap-1.5">
             <ImageDown size={14} className="text-gray-400" />

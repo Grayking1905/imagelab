@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import * as Blockly from "blockly";
 import { categories } from "../blocks/categories";
-import type { PipelineTimings } from "../types/pipeline";
+import type { PipelineTimings, DebugStepState } from "../types/pipeline";
 
 interface PipelineState {
   originalImage: string | null;
@@ -19,6 +19,13 @@ interface PipelineState {
   uniqueBlockTypes: number;
   categoryCounts: Record<string, number>;
   complexity: "Low" | "Medium" | "High";
+
+  // Debug mode
+  debugMode: boolean;
+  debugStates: DebugStepState[];
+  debugCursor: number;
+  isDebugActive: boolean;
+
   setOriginalImage: (image: string, format: string) => void;
   setProcessedImage: (image: string | null) => void;
   setExecuting: (executing: boolean) => void;
@@ -30,6 +37,14 @@ interface PipelineState {
   clearImage: () => void;
   _imageResetFn: (() => void) | null;
   registerImageReset: (fn: () => void) => void;
+
+  // Debug actions
+  setDebugMode: (on: boolean) => void;
+  setDebugStates: (states: DebugStepState[]) => void;
+  setDebugCursor: (cursor: number) => void;
+  stepForward: () => void;
+  stepBackward: () => void;
+  exitDebug: () => void;
 }
 
 function calculateComplexity(blocks: number, unique: number): "Low" | "Medium" | "High" {
@@ -39,7 +54,7 @@ function calculateComplexity(blocks: number, unique: number): "Low" | "Medium" |
   return "Low";
 }
 
-export const usePipelineStore = create<PipelineState>((set) => ({
+export const usePipelineStore = create<PipelineState>((set, get) => ({
   originalImage: null,
   imageFormat: "png",
   processedImage: null,
@@ -53,6 +68,13 @@ export const usePipelineStore = create<PipelineState>((set) => ({
   uniqueBlockTypes: 0,
   categoryCounts: {},
   complexity: "Low",
+
+  // Debug mode defaults
+  debugMode: false,
+  debugStates: [],
+  debugCursor: 0,
+  isDebugActive: false,
+
   setOriginalImage: (image, format) =>
     set({
       originalImage: image,
@@ -78,6 +100,9 @@ export const usePipelineStore = create<PipelineState>((set) => ({
       error: null,
       errorStep: null,
       timings: null,
+      debugStates: [],
+      debugCursor: 0,
+      isDebugActive: false,
     });
   },
   updateBlockStats: (workspace) => {
@@ -121,5 +146,45 @@ export const usePipelineStore = create<PipelineState>((set) => ({
       categoryCounts: {},
       complexity: "Low",
       timings: null,
+      debugMode: false,
+      debugStates: [],
+      debugCursor: 0,
+      isDebugActive: false,
+    }),
+
+  // Debug actions
+  setDebugMode: (on) => set({ debugMode: on }),
+
+  setDebugStates: (states) =>
+    set({
+      debugStates: states,
+      debugCursor: states.length - 1,
+      isDebugActive: true,
+    }),
+
+  setDebugCursor: (cursor) => {
+    const { debugStates } = get();
+    set({ debugCursor: Math.max(0, Math.min(cursor, debugStates.length - 1)) });
+  },
+
+  stepForward: () => {
+    const { debugCursor, debugStates } = get();
+    if (debugCursor < debugStates.length - 1) {
+      set({ debugCursor: debugCursor + 1 });
+    }
+  },
+
+  stepBackward: () => {
+    const { debugCursor } = get();
+    if (debugCursor > 0) {
+      set({ debugCursor: debugCursor - 1 });
+    }
+  },
+
+  exitDebug: () =>
+    set({
+      isDebugActive: false,
+      debugStates: [],
+      debugCursor: 0,
     }),
 }));

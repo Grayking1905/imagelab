@@ -1,6 +1,6 @@
 import { useState } from "react";
 import * as Blockly from "blockly";
-import { FilePlus, Download, Undo2, Redo2, Play, Loader2, Share2 } from "lucide-react";
+import { FilePlus, Download, Undo2, Redo2, Play, Loader2, Share2, Bug, BugOff } from "lucide-react";
 import { usePipelineStore } from "../store/pipelineStore";
 import { executePipeline } from "../api/pipeline";
 import { extractPipeline } from "../hooks/usePipeline";
@@ -31,6 +31,13 @@ export default function Toolbar({ workspace }: ToolbarProps) {
     uniqueBlockTypes,
     categoryCounts,
     complexity,
+    debugMode,
+    isDebugActive,
+    setDebugMode,
+    setDebugStates,
+    stepForward,
+    stepBackward,
+    exitDebug,
   } = usePipelineStore();
 
   const [showShareModal, setShowShareModal] = useState(false);
@@ -72,12 +79,16 @@ export default function Toolbar({ workspace }: ToolbarProps) {
         image: originalImage,
         image_format: imageFormat,
         pipeline,
+        debug: debugMode,
       });
 
       setTiming(response.timings ?? null);
 
       if (response.success && response.image) {
         setProcessedImage(response.image);
+        if (debugMode && response.debug_states && response.debug_states.length > 0) {
+          setDebugStates(response.debug_states);
+        }
       } else {
         setError(response.error || "Pipeline execution failed", response.step);
       }
@@ -95,6 +106,11 @@ export default function Toolbar({ workspace }: ToolbarProps) {
     onDownload: handleDownload,
     onUndo: handleUndo,
     onRedo: handleRedo,
+    onDebugToggle: () => setDebugMode(!debugMode),
+    onDebugStepForward: stepForward,
+    onDebugStepBackward: stepBackward,
+    onDebugExit: exitDebug,
+    isDebugActive,
     workspace,
   });
 
@@ -135,6 +151,18 @@ export default function Toolbar({ workspace }: ToolbarProps) {
           title="Share Pipeline"
         >
           <Share2 size={18} />
+        </button>
+
+        <div className={separator} />
+
+        <button
+          onClick={() => setDebugMode(!debugMode)}
+          className={`p-1.5 rounded transition-colors ${
+            debugMode ? "bg-amber-100 text-amber-700" : "hover:bg-gray-100 text-gray-500"
+          }`}
+          title={`Toggle Debug Mode (${mod}D)`}
+        >
+          {debugMode ? <Bug size={18} /> : <BugOff size={18} />}
         </button>
 
         <div className={separator} />

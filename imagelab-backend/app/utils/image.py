@@ -13,8 +13,15 @@ def decode_base64_image(b64: str) -> np.ndarray:
     return image
 
 
-def encode_image_base64(image: np.ndarray, fmt: str = "png") -> str:
-    success, buf = cv2.imencode(f".{fmt}", image)
+def encode_image_base64(image: np.ndarray, fmt: str = "png", quality: int | None = None) -> str:
+    params = []
+    if quality is not None:
+        if fmt.lower() in ("jpg", "jpeg"):
+            params = [cv2.IMWRITE_JPEG_QUALITY, quality]
+        elif fmt.lower() == "webp":
+            params = [cv2.IMWRITE_WEBP_QUALITY, quality]
+
+    success, buf = cv2.imencode(f".{fmt}", image, params)
     if not success:
         raise ValueError(f"Could not encode image as {fmt}")
     return base64.b64encode(buf).decode("utf-8")
